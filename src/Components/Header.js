@@ -1,14 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NamasteYoutube from "../assets/Namaste-Youtube.png";
 import { useDispatch } from "react-redux";
 import { toggleHamburger } from "../utils/ToggleSlice";
 import { Link } from "react-router-dom";
 const Header = () => {
   const [searchValue, setSearchValue] = useState("");
+  const [suggestionData, setSuggestionData] = useState(null);
+  const [hideSuggestions, setHideSuggestions] = useState(false);
+
   const dispatch = useDispatch();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      getSuggestions();
+    }, 200);
+    // console.log(timer);
+    return () => {
+      // console.log("clearing", timer);
+
+      clearTimeout(timer);
+    };
+  }, [searchValue]);
+
+  const handleSearchValue = (item) => {
+    setSearchValue(item);
+  };
+  async function getSuggestions() {
+    try {
+      const response = await fetch(
+        `http://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q=${searchValue}`
+      );
+      const data = await response.json();
+      // console.log("Auto suggestion", data);
+      setSuggestionData(data?.[1]);
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
+  }
+
+  // console.log(suggestionData);
   return (
-    <div className='basis-1/12 flex flex-row justify-between items-center mt-2 mb-5'>
-      <div className='basis-2/12 flex flex-row justify-start gap-2'>
+    <div className='basis-1/12 flex flex-row justify-between items-center py-3 mb-2 sticky top-0 bg-white h-1/12'>
+      <div className='basis-2/12 flex flex-row justify-start gap-2 w-2/12'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
           onClick={() => {
@@ -25,18 +58,28 @@ const Header = () => {
             d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'
           />
         </svg>
-        <img
-          className='w-24 h-6 mt-2'
-          src={NamasteYoutube}
-          alt='notfound'></img>
+        <Link to='/'>
+          <img
+            className='w-24 h-6 mt-2'
+            src={NamasteYoutube}
+            alt='notfound'></img>
+        </Link>
       </div>
-      <div className='basis-8/12 flex flex-row justify-center items-center'>
-        <div className='flex flex-row w-8/12'>
+      <div className='basis-8/12 flex flex-row justify-center items-center w-8/12'>
+        <div className='flex flex-row w-8/12 relative'>
           <input
             name='search'
             value={searchValue}
             onChange={(e) => {
               setSearchValue(e.target.value);
+            }}
+            onFocus={() => {
+              setHideSuggestions(true);
+            }}
+            onBlur={() => {
+              setTimeout(() => {
+                setHideSuggestions(false);
+              }, 200); // Delay in milliseconds (adjust as needed)
             }}
             placeholder='Search'
             id='search'
@@ -54,6 +97,40 @@ const Header = () => {
               d='M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z'
             />
           </svg>
+          {hideSuggestions && (
+            <div className='absolute top-11 w-11/12 border-slate-100 border-2 bg-white shadow-2xl rounded-lg'>
+              {suggestionData.map((item) => {
+                return (
+                  <div
+                    className='flex flex-row p-1 gap-x-2 justify-start cursor-pointer'
+                    key={item}>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1}
+                      stroke='currentColor'
+                      className='w-6 h-6 pt-1'>
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z'
+                      />
+                    </svg>
+
+                    <Link
+                      to={"/results?search_query=" + item.replace(/ /g, "+")}
+                      onClick={() => {
+                        handleSearchValue(item);
+                      }}
+                      className='text-base text-black font-semibold'>
+                      {item}
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
         <svg
           xmlns='http://www.w3.org/2000/svg'
@@ -69,7 +146,7 @@ const Header = () => {
           />
         </svg>
       </div>
-      <div className='basis-2/12 flex flex-row justify-end gap-3 mr-6'>
+      <div className='basis-2/12 flex flex-row justify-end gap-3 mr-6 w-2/12'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
           fill='none'

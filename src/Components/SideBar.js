@@ -18,7 +18,7 @@ const SideBar = () => {
   console.log(flag);
   if (flag) {
     return (
-      <div className='basis-2/12 flex flex-col items-center max-h-128 overflow-auto justify-left pt-4 gap-1 pl-2'>
+      <div className='basis-2/12 flex flex-col items-center max-h-128 overflow-auto justify-left pt-4 gap-1 pl-2 sticky left-0 top-20 bg-white'>
         {SideBarItems1.map((item) => {
           return <SideBarItem key={item.text} {...item} />;
         })}
@@ -51,7 +51,7 @@ const SideBar = () => {
   }
 
   return (
-    <div className='basis-20 flex flex-col items-center justify-start pl-3'>
+    <div className='basis-20 flex flex-col items-center justify-start pl-3 sticky left-0 top-20 bg-white h-96'>
       <Link
         to='/'
         className='flex flex-col mt-2 gap-2 items-center font-thin hover:bg-gray-200 hover:rounded-lg h-20 w-16 p-4 cursor-pointer'>

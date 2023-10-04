@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { convertCountsToIndianFormat } from "../utils/countFormatter";
 import { getRelativeTime } from "../utils/RelativeTime";
 import { Link } from "react-router-dom";
+import { API_KEY_AUTH } from "../utils/Constants";
 const VideoCard = ({ ...snippet }) => {
   // console.log(snippet);
 
@@ -15,7 +16,7 @@ const VideoCard = ({ ...snippet }) => {
     videoId,
   } = snippet;
   // console.log(videoId);
-  const CHANNEL_API = `https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${channelId}&key=AIzaSyA20MzU99wjT1APVWFzSwcMRL18zpGmV5w`;
+  const CHANNEL_API = `https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${channelId}&key=${API_KEY_AUTH}`;
 
   const [channelData, setChannelData] = useState(null);
 
