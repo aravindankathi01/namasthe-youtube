@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from "react";
 import NamasteYoutube from "../assets/Namaste-Youtube.png";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toggleHamburger } from "../utils/ToggleSlice";
 import { Link } from "react-router-dom";
+import { cacheResults } from "../utils/searchSlice";
 const Header = () => {
   const [searchValue, setSearchValue] = useState("");
   const [suggestionData, setSuggestionData] = useState(null);
   const [hideSuggestions, setHideSuggestions] = useState(false);
 
+  const searchCache = useSelector((store) => store.search);
   const dispatch = useDispatch();
   useEffect(() => {
     const timer = setTimeout(() => {
-      getSuggestions();
+      if (searchCache[searchValue]) {
+        setSuggestionData(searchCache[searchValue]);
+      } else {
+        getSuggestions();
+      }
     }, 200);
     // console.log(timer);
     return () => {
       // console.log("clearing", timer);
-
       clearTimeout(timer);
     };
   }, [searchValue]);
@@ -32,6 +37,7 @@ const Header = () => {
       const data = await response.json();
       // console.log("Auto suggestion", data);
       setSuggestionData(data?.[1]);
+      dispatch(cacheResults({ [searchValue]: data?.[1] }));
     } catch (error) {
       console.log(error.message);
       return null;
