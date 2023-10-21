@@ -15,7 +15,7 @@ const SideBar = () => {
   const flag = useSelector((store) => {
     return store.toggle.flag;
   });
-  console.log(flag);
+  // console.log(flag);
   if (flag) {
     return (
       <div className='basis-2/12 flex flex-col items-center max-h-128 overflow-auto justify-left pt-4 gap-1 pl-2 sticky left-0 top-20 bg-white'>
